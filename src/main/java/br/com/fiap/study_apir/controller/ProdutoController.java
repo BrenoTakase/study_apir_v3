@@ -65,9 +65,12 @@ public class ProdutoController {
     //O @PathVariable identifica que a variavel vem do path e não
     //de uma query (parâmetro)
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable Long id) {
-        mockup.deletedById(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Produto excluido");
+    public ResponseEntity<Void> deletedById(@PathVariable Long id) {
+        if (mockup.deletedById(id)) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }
