@@ -29,7 +29,7 @@ public class ProdutoController {
 
     @GetMapping
     public ResponseEntity<List<Produto>> findAll() {
-        return ResponseEntity.status(HttpStatus.OK).body(mockup.findAll());
+        return ResponseEntity.ok(mockup.findAll());
     }
 
     @GetMapping("/{id}")
