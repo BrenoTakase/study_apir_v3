@@ -1,8 +1,8 @@
 package br.com.fiap.study_apir.controller;
 
 import java.util.List;
-import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,10 +21,14 @@ import br.com.fiap.study_apir.repository.RepositoryProdutoMockup;
 @RequestMapping("api/${api.version}/produtos")
 public class ProdutoController {
 
-    private RepositoryProdutoMockup mockup = new RepositoryProdutoMockup();
+    //Como não é uma boa pratica criar um new Mockup pois gera dependencias
+    //O Autowired conecta que o objeto Mockup vem
+    @Autowired
+    private RepositoryProdutoMockup mockup;
 
     @PostMapping
-    public ResponseEntity<String> create() {
+    public ResponseEntity<String> create(@RequestBody Produto produto) {
+        mockup.create(produto);
         return ResponseEntity.status(HttpStatus.CREATED).body("Produto criado");
     }
 
@@ -57,9 +62,14 @@ public class ProdutoController {
            .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping
-    public ResponseEntity<String> update() {
-        return ResponseEntity.status(HttpStatus.OK).body("Produto atualizado");
+    @PutMapping("/{id}")
+    public ResponseEntity<String> update(@PathVariable Long id,
+                                        @RequestBody Produto produto) {
+            if (mockup.update(id, produto)) {
+                return ResponseEntity.ok("Produto atualizado");
+            } else {
+                return ResponseEntity.notFound().build();
+            }
     }
 
     //O @PathVariable identifica que a variavel vem do path e não
